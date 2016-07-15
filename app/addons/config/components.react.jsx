@@ -5,6 +5,7 @@
 import React from "react";
 import Stores from "./stores";
 import Actions from "./actions";
+import { OverlayTrigger, Button, Popover } from "react-bootstrap";
 
 var configStore = Stores.configStore;
 
@@ -74,8 +75,8 @@ var ConfigTable = React.createClass({
       <table className="config table table-striped table-bordered">
         <thead>
           <tr>
-            <th id="config-section">Section</th>
-            <th id="config-option">Option</th>
+            <th id="config-section" width="22%">Section</th>
+            <th id="config-option" width="22%">Option</th>
             <th id="config-value">Value</th>
             <th id="config-trash"></th>
           </tr>
@@ -93,7 +94,7 @@ var ConfigOption = React.createClass({
     var sectionName = this.props.sectionName;
     var optionName = this.props.optionName;
 
-    Actions.saveOption(configStore.getNode(), sectionName, optionName, value);
+    Actions.saveOption(configStore.getNode(), sectionName, optionName, value, this.props.value);
   },
 
   onCancel: function () {
@@ -108,6 +109,13 @@ var ConfigOption = React.createClass({
     var optionName = this.props.optionName;
 
     Actions.editOption(sectionName, optionName);
+  },
+
+  onDelete: function () {
+    var sectionName = this.props.sectionName;
+    var optionName = this.props.optionName;
+
+    Actions.deleteOption(configStore.getNode(), sectionName, optionName);
   },
 
   render: function () {
@@ -127,7 +135,8 @@ var ConfigOption = React.createClass({
           onEdit={this.onEdit}
           editing={configStore.isOptionEditing(sectionName, optionName)}
           saving={configStore.isOptionSaving(sectionName, optionName)}/>
-        <td className="text-center"><i className="icon icon-trash"></i></td>
+        <ConfigOptionTrash
+          onDelete={this.onDelete} />
       </tr>
     );
   }
@@ -163,11 +172,13 @@ var ConfigOptionValue = React.createClass({
     if (isEditing) {
       return (
         <td>
-          <input className="js-value-input" defaultValue={value} disabled={isSaving} onChange={this.onChange} />
-          <button className="btn btn-success fonticon-ok-circled btn-small"
-                  onClick={() => onSave(this.state.value)} />
-          <button className="btn btn-success fonticon-cancel-circled"
-                  onClick={onCancel} />
+          <div className="js-edit-value-form">
+            <input autoFocus type="text" className="js-value-input" defaultValue={value} disabled={isSaving} onChange={this.onChange} />
+            <button className="btn btn-success fonticon-ok-circled btn-small"
+                    onClick={() => onSave(this.state.value)} />
+            <button className="btn fonticon-cancel-circled btn-small"
+                    onClick={onCancel} />
+          </div>
         </td>
       );
     } else {
@@ -178,6 +189,93 @@ var ConfigOptionValue = React.createClass({
   }
 });
 
+var ConfigOptionTrash = React.createClass({
+  render: function () {
+    return (
+      <td className="text-center" onClick={this.props.onDelete}>
+        <i className="icon icon-trash"></i>
+      </td>
+    );
+  }
+});
+
+var AddOptionButton = React.createClass({
+  getStoreState: function () {
+    return {
+      adding: configStore.isAdding()
+    };
+  },
+
+  getInitialState: function () {
+    return  {
+      sectionName: '',
+      optionName: '',
+      value: '',
+      adding: configStore.isAdding()
+    };
+  },
+
+  componentDidMount: function () {
+    configStore.on('change', this.onChange, this);
+  },
+
+  componentWillUnmount: function () {
+    configStore.off('change', this.onChange, this);
+  },
+
+  onChange: function () {
+    if (this.isMounted()) {
+      this.setState(this.getStoreState());
+    }
+  },
+
+  addOption: function () {
+    Actions.addOption(
+      configStore.getNode(),
+      this.state.sectionName,
+      this.state.optionName,
+      this.state.value);
+  },
+
+  getPopover: function () {
+    return (
+      <Popover className="tray" id="add-option-popover" title="Add Option">
+        <input
+          onChange={e => this.setState({sectionName: e.target.value})}
+          disabled={this.state.adding}
+          type="text" name="section" placeholder="Section" autocomplete="off" autoFocus />
+        <input
+          onChange={e => this.setState({optionName: e.target.value})}
+          disabled={this.state.adding}
+          type="text" name="name" placeholder="Name" />
+        <input
+          onChange={e => this.setState({value: e.target.value})}
+          disabled={this.state.adding}
+          type="text" name="value" placeholder="Value" />
+        <a
+          onClick={this.addOption}
+          disabled={this.state.adding}
+          className="btn">Create</a>
+      </Popover>
+    );
+  },
+
+  render: function () {
+    return (
+      <OverlayTrigger
+        overlay={this.getPopover()}
+        rootClose={!this.state.adding}
+        trigger="click" placement="bottom" rootClose>
+        <Button id="add-option-button">
+          <i className="icon icon-plus header-icon"></i>
+          Add Option
+        </Button>
+      </OverlayTrigger>
+    );
+  }
+});
+
 export default {
-  ConfigController: ConfigController
+  ConfigController: ConfigController,
+  AddOptionButton: AddOptionButton
 };
