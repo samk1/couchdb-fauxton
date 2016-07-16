@@ -85,6 +85,7 @@ var ConfigStore = FauxtonAPI.Store.extend({
   },
 
   editOption: function (sectionName, optionName) {
+    this._editing = {};
     set(this._editing, sectionName, optionName);
   },
 
@@ -93,8 +94,8 @@ var ConfigStore = FauxtonAPI.Store.extend({
   },
 
   stopOptionEdit: function (sectionName, optionName) {
-    unset(this._editing, sectionName, optionName);
-    unset(this._saving, sectionName, optionName);
+    this._editing = {};
+    this._saving = {};
   },
 
   isOptionEditing: function (sectionName, optionName) {

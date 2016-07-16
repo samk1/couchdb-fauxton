@@ -23,7 +23,14 @@ export default {
     });
   },
 
-  saveOption: function (node, sectionName, optionName, value) {
+  saveOption: function (node, sectionName, optionName, value, oldValue) {
+    if (value === oldValue) {
+      FauxtonAPI.dispatch({
+        type: ActionTypes.OPTION_SAVE_SUCCESS,
+        options: { sectionName, optionName, value }
+      });
+    }
+
     FauxtonAPI.dispatch({
       type: ActionTypes.SAVING_OPTION,
       options: { sectionName, optionName }
