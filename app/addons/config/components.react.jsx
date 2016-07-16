@@ -101,21 +101,27 @@ var ConfigOption = React.createClass({
     var sectionName = this.props.sectionName;
     var optionName = this.props.optionName;
 
-    Actions.saveOption(configStore.getNode(), sectionName, optionName, value, this.props.value);
+    if (!configStore.isAddOptionPopoverVisible()) {
+      Actions.saveOption(configStore.getNode(), sectionName, optionName, value, this.props.value);
+    }
   },
 
   onCancel: function () {
     var sectionName = this.props.sectionName;
     var optionName = this.props.optionName;
 
-    Actions.cancelOptionEdit(sectionName, optionName);
+    if (!configStore.isAddOptionPopoverVisible()) {
+      Actions.cancelOptionEdit(sectionName, optionName);
+    }
   },
 
   onEdit: function () {
     var sectionName = this.props.sectionName;
     var optionName = this.props.optionName;
 
-    Actions.editOption(sectionName, optionName);
+    if (!configStore.isAddOptionPopoverVisible()) {
+      Actions.editOption(sectionName, optionName);
+    }
   },
 
   onDelete: function () {
@@ -182,8 +188,8 @@ var ConfigOptionValue = React.createClass({
     if (isEditing) {
       return (
         <td>
-          <div className="js-edit-value-form">
-            <input autoFocus type="text" className="js-value-input" defaultValue={value} disabled={isSaving} onChange={this.onChange} />
+          <div className="config-value-form">
+            <input autoFocus type="text" className="config-value-input" defaultValue={value} disabled={isSaving} onChange={this.onChange} />
             <button className="btn btn-success fonticon-ok-circled btn-small"
                     onClick={() => onSave(this.state.value)} />
             <button className="btn fonticon-cancel-circled btn-small"
@@ -193,7 +199,7 @@ var ConfigOptionValue = React.createClass({
       );
     } else {
       return (
-        <td onClick={onEdit}>{value}</td>
+        <td className="config-show-value" onClick={onEdit}>{value}</td>
       );
     }
   }
@@ -208,7 +214,7 @@ var ConfigOptionTrash = React.createClass({
 
   render: function () {
     return (
-      <td className="text-center config-item-trash" onClick={() => this.setState({showModal: true})}>
+      <td className="text-center config-item-trash config-delete-value" onClick={() => this.setState({showModal: true})}>
         <i className="icon icon-trash"></i>
         <Components.ConfirmationModal
           text="Are you sure you want to delete this configuration value?"
