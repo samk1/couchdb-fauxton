@@ -6,13 +6,11 @@ import FauxtonAPI from '../../core/api';
 import Resources from './resources';
 
 export default {
-  fetchAndEditConfig: function (node) {
-    var config = new Resources.ConfigModel({node: node});
-
+  fetchAndEditConfig: function (node, model) {
     FauxtonAPI.dispatch({ type: ActionTypes.LOADING_CONFIG });
 
-    FauxtonAPI.when([config.fetch()]).then(function () {
-      this.editSections(config.get('sections'), node);
+    FauxtonAPI.when([model.fetch()]).then(function () {
+      this.editSections(model.get('sections'), node);
     }.bind(this));
   },
 
@@ -70,6 +68,10 @@ export default {
   },
 
   addOption: function (node, sectionName, optionName, value) {
+    if (sectionName === '' || optionName === '') {
+      return;
+    }
+
     FauxtonAPI.dispatch({ type: ActionTypes.ADDING_OPTION });
 
     var optionModel = new Resources.OptionModel({ node, sectionName, optionName, value });
