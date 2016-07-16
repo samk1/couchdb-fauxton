@@ -132,12 +132,15 @@ var ConfigOption = React.createClass({
 
   render: function () {
     var isHeader = this.props.header;
+    var isDeleting = configStore.isOptionDeleting(sectionName, optionName);
     var sectionName = this.props.sectionName;
     var optionName = this.props.optionName;
     var value = this.props.value;
 
+    var trClass = isDeleting ? "config-item config-item-deleting" : "config-item";
+
     return (
-      <tr className="config-item">
+      <tr className={trClass}>
         <th>{isHeader && sectionName}</th>
         <ConfigOptionName name={optionName} />
         <ConfigOptionValue
@@ -204,7 +207,7 @@ var ConfigOptionValue = React.createClass({
 var ConfigOptionTrash = React.createClass({
   render: function () {
     return (
-      <td className="text-center" onClick={this.props.onDelete}>
+      <td className="text-center config-item-trash" onClick={this.props.onDelete}>
         <i className="icon icon-trash"></i>
       </td>
     );
