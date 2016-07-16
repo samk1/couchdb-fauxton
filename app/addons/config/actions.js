@@ -135,9 +135,5 @@ export default {
       type: ActionTypes.UPDATE_NEW_OPTION_VALUE,
       options: { value }
     });
-  },
-
-  configTableUpdated: function () {
-    FauxtonAPI.dispatch({ type: ActionTypes.CONFIG_TABLE_UPDATED });
   }
 };
