@@ -13,11 +13,6 @@
 @import "../../../../../assets/less/variables.less";
 @import "../../../../../assets/less/bootstrap/mixins.less";
 
-.table-striped tbody > tr.config-item:nth-child(odd) > td,
-.table-striped tbody > tr.config-item:nth-child(odd) > th {
-  transition: background-color 100ms;
-}
-
 .config-item {
   height: 65px;
 
@@ -49,6 +44,11 @@
 
 .config-item:hover {
   background-color: #e0e0e0;
+}
+
+.table-striped tbody > tr.config-item:nth-child(odd) > td,
+.table-striped tbody > tr.config-item:nth-child(odd) > th {
+  transition: background-color 100ms;
 }
 
 .table-striped tbody > tr.config-item:nth-child(odd):hover > td,
