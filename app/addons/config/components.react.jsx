@@ -95,7 +95,9 @@ var ConfigOption = React.createClass({
     var sectionName = this.props.sectionName;
     var optionName = this.props.optionName;
 
-    Actions.saveOption(configStore.getNode(), sectionName, optionName, value, this.props.value);
+    if (this.props.value !== value) {
+      Actions.saveOption(configStore.getNode(), sectionName, optionName, value);
+    }
   },
 
   onCancel: function () {
