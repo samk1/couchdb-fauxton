@@ -29,6 +29,7 @@ export default {
         type: ActionTypes.OPTION_SAVE_SUCCESS,
         options: { sectionName, optionName, value }
       });
+      return;
     }
 
     FauxtonAPI.dispatch({
