@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import Stores from "./stores";
 import Actions from "./actions";
 import { Overlay, Button, Popover } from "react-bootstrap";
+import Components from "../fauxton/components.react";
 
 var configStore = Stores.configStore;
 
@@ -201,10 +202,21 @@ var ConfigOptionValue = React.createClass({
 });
 
 var ConfigOptionTrash = React.createClass({
+  getInitialState: function () {
+    return {
+      showModal: false
+    };
+  },
+
   render: function () {
     return (
-      <td className="text-center config-item-trash" onClick={this.props.onDelete}>
+      <td className="text-center config-item-trash" onClick={() => this.setState({showModal: true})}>
         <i className="icon icon-trash"></i>
+        <Components.ConfirmationModal
+          text="Are you sure you want to delete this configuration value?"
+          onClose={() => this.setState({showModal: false})}
+          onSubmit={this.props.onDelete}
+          visible={this.state.showModal} />
       </td>
     );
   }
