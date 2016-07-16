@@ -13,17 +13,26 @@
 @import "../../../../../assets/less/variables.less";
 @import "../../../../../assets/less/bootstrap/mixins.less";
 
-
+.table-striped tbody > tr.config-item:nth-child(odd) > td,
+.table-striped tbody > tr.config-item:nth-child(odd) > th {
+  transition: background-color 100ms;
+}
 
 .config-item {
   height: 65px;
 
-  .js-value-input {
+  .config-value-form {
+    button {
+      margin-left: 8px;
+    }
+  }
+
+  .config-value-input {
     width: 80%;
     margin: 0;
   }
-  .js-show-value,
-  .js-delete-value {
+  .config-show-value,
+  .config-delete-value {
     cursor: pointer;
   }
   .js-hidden {
@@ -34,6 +43,17 @@
   }
 
   button { width: 7%;}
+
+  transition: background-color 100ms;
+}
+
+.config-item:hover {
+  background-color: #e0e0e0;
+}
+
+.table-striped tbody > tr.config-item:nth-child(odd):hover > td,
+.table-striped tbody > tr.config-item:nth-child(odd):hover > th {
+  background-color: #e7e7e7;
 }
 
 .config-item-deleting {
