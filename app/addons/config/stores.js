@@ -31,9 +31,13 @@ var ConfigStore = FauxtonAPI.Store.extend({
     this._sections = [];
     this._loading = true;
     this._adding = false;
+    this._addOptionPopoverVisible = false;
     this._editing = {};
     this._saving = {};
     this._deleting = {};
+    this._newSectionName = '';
+    this._newOptionName = '';
+    this._newOptionValue = '';
   },
 
   editConfig: function (sections, node) {
@@ -56,6 +60,22 @@ var ConfigStore = FauxtonAPI.Store.extend({
 
   isAdding: function () {
     return this._adding;
+  },
+
+  isAddOptionPopoverVisible: function () {
+    return this._addOptionPopoverVisible;
+  },
+
+  getNewSectionName: function () {
+    return this._newSectionName;
+  },
+
+  getNewOptionName: function () {
+    return this._newOptionName;
+  },
+
+  getNewOptionValue: function () {
+    return this._newOptionValue;
   },
 
   editOption: function (sectionName, optionName) {
@@ -103,6 +123,7 @@ var ConfigStore = FauxtonAPI.Store.extend({
     if (action.options) {
       var sectionName = action.options.sectionName;
       var optionName = action.options.optionName;
+      var value = action.options.value;
     }
 
     switch (action.type) {
@@ -123,8 +144,7 @@ var ConfigStore = FauxtonAPI.Store.extend({
       break;
 
       case ActionTypes.OPTION_SAVE_SUCCESS:
-        var newValue = action.options.newValue;
-        this.setOptionValue(sectionName, optionName, newValue);
+        this.setOptionValue(sectionName, optionName, value);
         this.stopOptionEdit(sectionName, optionName);
       break;
 
@@ -149,13 +169,36 @@ var ConfigStore = FauxtonAPI.Store.extend({
       break;
 
       case ActionTypes.OPTION_ADD_SUCCESS:
-        var value = action.options.value;
         this.setOptionValue(sectionName, optionName, value);
         this._adding = false;
+        this._addOptionPopoverVisible = false;
+        this._newOptionName = '';
+        this._newOptionValue = '';
       break;
 
       case ActionTypes.OPTION_ADD_FAILURE:
         this._adding = false;
+      break;
+
+      case ActionTypes.TOGGLE_ADD_OPTION_POPOVER:
+        this._addOptionPopoverVisible = !this._addOptionPopoverVisible;
+      break;
+
+      case ActionTypes.HIDE_ADD_OPTION_POPOVER:
+        this._addOptionPopoverVisible = false;
+      break;
+
+      case ActionTypes.UPDATE_NEW_OPTION_NAME:
+        this._newOptionName = optionName;
+      break;
+
+      case ActionTypes.UPDATE_NEW_SECTION_NAME:
+        this._newSectionName = sectionName;
+      break;
+
+      case ActionTypes.UPDATE_NEW_OPTION_VALUE:
+        this._newOptionValue = value;
+      break;
     }
 
     this.triggerChange();

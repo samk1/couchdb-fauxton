@@ -96,7 +96,7 @@ export default {
           options: {
             sectionName: sectionName,
             optionName: optionName,
-            newValue: value
+            value: value
           }
         });
       },
@@ -135,5 +135,38 @@ export default {
         });
       }
     );
+  },
+
+  toggleAddOptionPopoverVisible: function () {
+    FauxtonAPI.dispatch({
+      type: ActionTypes.TOGGLE_ADD_OPTION_POPOVER
+    });
+  },
+
+  hideAddOptionPopover: function () {
+    FauxtonAPI.dispatch({
+      type: ActionTypes.HIDE_ADD_OPTION_POPOVER
+    });
+  },
+
+  updateNewSectionName: function (sectionName) {
+    FauxtonAPI.dispatch({
+      type: ActionTypes.UPDATE_NEW_SECTION_NAME,
+      options: { sectionName: sectionName }
+    });
+  },
+
+  updateNewOptionName: function (optionName) {
+    FauxtonAPI.dispatch({
+      type: ActionTypes.UPDATE_NEW_OPTION_NAME,
+      options: { optionName: optionName }
+    });
+  },
+
+  updateNewOptionValue: function (value) {
+    FauxtonAPI.dispatch({
+      type: ActionTypes.UPDATE_NEW_OPTION_VALUE,
+      options: { value: value }
+    });
   }
 };

@@ -3,9 +3,10 @@
  */
 
 import React from "react";
+import ReactDOM from "react-dom";
 import Stores from "./stores";
 import Actions from "./actions";
-import { OverlayTrigger, Button, Popover } from "react-bootstrap";
+import { Overlay, Button, Popover } from "react-bootstrap";
 
 var configStore = Stores.configStore;
 
@@ -201,18 +202,17 @@ var ConfigOptionTrash = React.createClass({
 
 var AddOptionButton = React.createClass({
   getStoreState: function () {
-    return {
-      adding: configStore.isAdding()
+    return  {
+      sectionName: configStore.getNewSectionName(),
+      optionName: configStore.getNewOptionName(),
+      value: configStore.getNewOptionValue(),
+      adding: configStore.isAdding(),
+      show: configStore.isAddOptionPopoverVisible()
     };
   },
 
   getInitialState: function () {
-    return  {
-      sectionName: '',
-      optionName: '',
-      value: '',
-      adding: configStore.isAdding()
-    };
+    return this.getStoreState();
   },
 
   componentDidMount: function () {
@@ -241,15 +241,15 @@ var AddOptionButton = React.createClass({
     return (
       <Popover className="tray" id="add-option-popover" title="Add Option">
         <input
-          onChange={e => this.setState({sectionName: e.target.value})}
+          onChange={e => Actions.updateNewSectionName(e.target.value)}
           disabled={this.state.adding}
           type="text" name="section" placeholder="Section" autocomplete="off" autoFocus />
         <input
-          onChange={e => this.setState({optionName: e.target.value})}
+          onChange={e => Actions.updateNewOptionName(e.target.value)}
           disabled={this.state.adding}
           type="text" name="name" placeholder="Name" />
         <input
-          onChange={e => this.setState({value: e.target.value})}
+          onChange={e => e => Actions.updateNewOptionValue(e.target.value)}
           disabled={this.state.adding}
           type="text" name="value" placeholder="Value" />
         <a
@@ -262,15 +262,24 @@ var AddOptionButton = React.createClass({
 
   render: function () {
     return (
-      <OverlayTrigger
-        overlay={this.getPopover()}
-        rootClose={!this.state.adding}
-        trigger="click" placement="bottom" rootClose>
-        <Button id="add-option-button">
-          <i className="icon icon-plus header-icon"></i>
-          Add Option
+      <div id="add-option-panel">
+        <Button
+          id="add-option-button"
+          onClick={() => Actions.toggleAddOptionPopoverVisible()}
+          ref="target">
+            <i className="icon icon-plus header-icon"></i>
+            Add Option
         </Button>
-      </OverlayTrigger>
+
+        <Overlay
+          show={this.state.show}
+          onHide={() => !this.state.adding && Actions.hideAddOptionPopover()}
+          placement="bottom"
+          rootClose={true}
+          target={() => ReactDOM.findDOMNode(this.refs.target)}>
+            {this.getPopover()}
+        </Overlay>
+      </div>
     );
   }
 });
