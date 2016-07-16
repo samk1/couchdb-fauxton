@@ -38,12 +38,18 @@ var ConfigStore = FauxtonAPI.Store.extend({
     this._newSectionName = '';
     this._newOptionName = '';
     this._newOptionValue = '';
+    this._shouldUpdate = true;
   },
 
   editConfig: function (sections, node) {
     this._node = node;
     this._sections = sections;
     this._loading = false;
+    this._shouldUpdate = true;
+  },
+
+  shouldConfigTableUpdate: function () {
+    return this._shouldUpdate;
   },
 
   getNode: function () {
@@ -80,15 +86,18 @@ var ConfigStore = FauxtonAPI.Store.extend({
 
   editOption: function (sectionName, optionName) {
     set(this._editing, sectionName, optionName);
+    this._shouldUpdate = true;
   },
 
   setOptionValue: function (sectionName, optionName, newValue) {
     set(this._sections, sectionName, optionName, newValue);
+    this._shouldUpdate = true;
   },
 
   stopOptionEdit: function (sectionName, optionName) {
     unset(this._editing, sectionName, optionName);
     unset(this._saving, sectionName, optionName);
+    this._shouldUpdate = true;
   },
 
   isOptionEditing: function (sectionName, optionName) {
@@ -97,6 +106,7 @@ var ConfigStore = FauxtonAPI.Store.extend({
 
   saveOption: function (sectionName, optionName) {
     set(this._saving, sectionName, optionName);
+    this._shouldUpdate = true;
   },
 
   isOptionSaving: function (sectionName, optionName) {
@@ -105,6 +115,7 @@ var ConfigStore = FauxtonAPI.Store.extend({
 
   deleteOption: function (sectionName, optionName) {
     set(this._deleting, sectionName, optionName);
+    this._shouldUpdate = true;
   },
 
   isOptionDeleting: function (sectionName, optionName) {
@@ -113,10 +124,12 @@ var ConfigStore = FauxtonAPI.Store.extend({
 
   deleteOptionValue: function (sectionName, optionName) {
     unset(this._sections, sectionName, optionName);
+    this._shouldUpdate = true;
   },
 
   stopOptionDelete: function (sectionName, optionName) {
     unset(this._deleting, sectionName, optionName);
+    this._shouldUpdate = true;
   },
 
   dispatch: function (action) {
@@ -198,6 +211,10 @@ var ConfigStore = FauxtonAPI.Store.extend({
 
       case ActionTypes.UPDATE_NEW_OPTION_VALUE:
         this._newOptionValue = value;
+      break;
+
+      case ActionTypes.CONFIG_TABLE_UPDATED:
+        this._shouldUpdate = false;
       break;
     }
 

@@ -14,7 +14,8 @@ var ConfigController = React.createClass({
   getStoreState: function () {
     return {
       sections: configStore.getSections(),
-      loading: configStore.isLoading()
+      loading: configStore.isLoading(),
+      shouldUpdate: configStore.shouldConfigTableUpdate()
     };
   },
 
@@ -28,6 +29,14 @@ var ConfigController = React.createClass({
 
   componentWillUnmount: function () {
     configStore.off('change', this.onChange, this);
+  },
+
+  shouldComponentUpdate: function (_, nextState) {
+    return nextState.shouldUpdate;
+  },
+
+  componentDidUpdate: function () {
+    Actions.configTableUpdated();
   },
 
   onChange: function () {
