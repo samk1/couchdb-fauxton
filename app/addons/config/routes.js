@@ -60,7 +60,7 @@ var ConfigPerNodeRouteObject = FauxtonAPI.RouteObject.extend({
   initialize: function (_a, _b, options) {
     var node = options[0];
 
-    this.configs = new Config.Collection(null, {node: node});
+    this.configs = new Config.ConfigModel({node: node});
 
     this.sidebar = this.setView('#sidebar-content', new Views.Tabs({
       sidebarItems: [
@@ -79,14 +79,16 @@ var ConfigPerNodeRouteObject = FauxtonAPI.RouteObject.extend({
   },
 
   configForNode: function (node) {
+    this.removeComponents();
     this.setComponent('#right-header', ConfigComponents.AddOptionButton);
-    this.setComponent('#dashboard-content', ConfigComponents.ConfigController);
-    ConfigActions.fetchAndEditConfig(node);
+    this.setComponent('#dashboard-lower-content', ConfigComponents.ConfigController);
+    ConfigActions.fetchAndEditConfig(node, this.configs);
     this.sidebar.setSelectedTab('main');
   },
 
   configCorsForNode: function (node) {
-   this.setComponent('#dashboard-content', CORSComponents.CORSController);
+    this.removeComponents();
+    this.setComponent('#dashboard-lower-content', CORSComponents.CORSController);
     CORSActions.fetchAndEditCors(node);
     this.sidebar.setSelectedTab('cors');
   }
