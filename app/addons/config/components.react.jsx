@@ -15,7 +15,7 @@ var ConfigController = React.createClass({
     return {
       sections: configStore.getSections(),
       loading: configStore.isLoading(),
-      shouldUpdate: configStore.shouldConfigTableUpdate()
+      shouldUpdate: !configStore.isAddOptionPopoverVisible()
     };
   },
 
@@ -33,10 +33,6 @@ var ConfigController = React.createClass({
 
   shouldComponentUpdate: function (_, nextState) {
     return nextState.shouldUpdate;
-  },
-
-  componentDidUpdate: function () {
-    Actions.configTableUpdated();
   },
 
   onChange: function () {
