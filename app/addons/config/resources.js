@@ -47,6 +47,8 @@ Config.OptionModel = Backbone.Model.extend({
 });
 
 Config.ConfigModel = Backbone.Model.extend({
+  documentation: FauxtonAPI.constants.DOC_URLS.CONFIG,
+
   url: function () {
     if (!this.get('node')) {
       throw new Error('no node set');
