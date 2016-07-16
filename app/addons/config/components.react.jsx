@@ -7,7 +7,8 @@ import ReactDOM from "react-dom";
 import Stores from "./stores";
 import Actions from "./actions";
 import { Overlay, Button, Popover } from "react-bootstrap";
-import Components from "../fauxton/components.react";
+import Components from "../components/react-components.react";
+import FauxtonComponents from "../fauxton/components.react";
 
 var configStore = Stores.configStore;
 
@@ -43,10 +44,6 @@ var ConfigController = React.createClass({
   },
 
   render: function () {
-    if (configStore.isLoading()) {
-      return false;
-    }
-
     var sections = this.state.sections;
     var loading = this.state.loading;
 
@@ -76,6 +73,14 @@ var ConfigTable = React.createClass({
   },
 
   render: function () {
+    if (this.props.loading) {
+      return (
+        <div className="view">
+          <Components.LoadLines />
+        </div>
+      );
+    }
+
     var sections = this.createSections();
 
     return (
@@ -216,7 +221,7 @@ var ConfigOptionTrash = React.createClass({
     return (
       <td className="text-center config-item-trash config-delete-value" onClick={() => this.setState({showModal: true})}>
         <i className="icon icon-trash"></i>
-        <Components.ConfirmationModal
+        <FauxtonComponents.ConfirmationModal
           text="Are you sure you want to delete this configuration value?"
           onClose={() => this.setState({showModal: false})}
           onSubmit={this.props.onDelete}
