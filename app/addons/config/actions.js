@@ -39,7 +39,7 @@ export default {
       .done(function () {
         this.optionSaveSuccess(options);
       }.bind(this))
-      .error(function (xhr) {
+      .fail(function (xhr) {
           var error = JSON.parse(xhr.responseText).reason;
           this.optionSaveFailure(options, error);
         }.bind(this)
@@ -73,7 +73,7 @@ export default {
       .done(function () {
         this.optionAddSuccess(options);
       }.bind(this))
-      .error(function (xhr) {
+      .fail(function (xhr) {
         var error = JSON.parse(xhr.responseText).reason;
         this.optionAddFailure(options, error);
       }.bind(this));
@@ -106,7 +106,7 @@ export default {
       .done(function success () {
         this.optionDeleteSuccess(options);
       }.bind(this))
-      .error(function failure (xhr) {
+      .fail(function failure (xhr) {
         var error = JSON.parse(xhr.responseText).reason;
         this.optionDeleteFailure(options, error);
       }.bind(this));
