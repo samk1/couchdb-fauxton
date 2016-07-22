@@ -132,12 +132,12 @@ var ConfigTable = React.createClass({
     return (
       <table className="config table table-striped table-bordered">
         <thead>
-        <tr>
-          <th id="config-section" width="22%">Section</th>
-          <th id="config-option" width="22%">Option</th>
-          <th id="config-value">Value</th>
-          <th id="config-trash"></th>
-        </tr>
+          <tr>
+            <th id="config-section" width="22%">Section</th>
+            <th id="config-option" width="22%">Option</th>
+            <th id="config-value">Value</th>
+            <th id="config-trash"></th>
+          </tr>
         </thead>
         <tbody>
         {options}
