@@ -42,13 +42,13 @@ var ConfigTableController = Components.connectToStores(React.createClass({
         <ConfigTable
           onDeleteOption={this.deleteOption}
           onSaveOption={this.saveOption}
-          sections={this.props.sections} />
+          options={this.props.options} />
       );
     }
   }
 }), [configStore], function() {
   return {
-    sections: configStore.getSections(),
+    options: configStore.getOptions(),
     loading: configStore.isLoading()
   };
 });
@@ -78,14 +78,10 @@ var ConfigTable = React.createClass({
   },
 
   createOptions: function () {
-    var options = _.sortBy(_.flatten(_.map(this.props.sections, function(section, sectionName) {
-      return _.map(section, function (value, optionName) {
-        return { sectionName, optionName, value};
-      });
-    })), o => o.sectionName, o => o.optionName);
+    // previous section name
+    var p = null;
 
-    var p = null; // previous section name
-    return _.map(options, function (option) {
+    return _.map(this.props.options, function (option) {
       var key = `${option.sectionName}:${option.optionName}`;
       var editing = this.state.editingSectionName == option.sectionName
         && this.state.editingOptionName == option.optionName;

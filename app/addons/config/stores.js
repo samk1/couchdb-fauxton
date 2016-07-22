@@ -21,7 +21,7 @@ var ConfigStore = FauxtonAPI.Store.extend({
   },
 
   reset: function () {
-    this._sections = [];
+    this._sections = {};
     this._loading = true;
   },
 
@@ -30,8 +30,24 @@ var ConfigStore = FauxtonAPI.Store.extend({
     this._loading = false;
   },
 
-  getSections: function () {
-    return this._sections;
+  getOptions: function () {
+    return this.sortOptions(
+      this.mapOptions()
+    );
+  },
+
+  sortOptions: function (options) {
+    return _.sortBy(options, o => o.sectionName, o => o.optionName);
+  },
+
+  mapOptions: function () {
+    return _.flatten(
+      _.map(this._sections, function (section, sectionName) {
+        return _.map(section, function (value, optionName) {
+            return { sectionName, optionName, value };
+        });
+      })
+    );
   },
 
   isLoading: function () {
