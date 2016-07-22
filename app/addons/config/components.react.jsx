@@ -21,43 +21,17 @@ import FauxtonComponents from "../fauxton/components.react";
 
 var configStore = Stores.configStore;
 
-var ConfigController = React.createClass({
-  getStoreState: function () {
-    return {
-      sections: configStore.getSections(),
-      loading: configStore.isLoading(),
-      node: configStore.getNode()
-    };
-  },
-
-  getInitialState: function () {
-    return this.getStoreState();
-  },
-
-  componentDidMount: function () {
-    configStore.on('change', this.onChange, this);
-  },
-
-  componentWillUnmount: function () {
-    configStore.off('change', this.onChange, this);
-  },
-
-  onChange: function () {
-    if (this.isMounted()) {
-      this.setState(this.getStoreState());
-    }
-  },
-
+var ConfigTableController = Components.connectToStores(React.createClass({
   saveOption: function (option) {
-    Actions.saveOption(this.state.node, option);
+    Actions.saveOption(this.props.node, option);
   },
 
   deleteOption: function (option) {
-    Actions.deleteOption(this.state.node, option);
+    Actions.deleteOption(this.props.node, option);
   },
 
   render: function () {
-    if (this.state.loading) {
+    if (this.props.loading) {
       return (
         <div className="view">
           <Components.LoadLines />
@@ -68,11 +42,15 @@ var ConfigController = React.createClass({
         <ConfigTable
           onDeleteOption={this.deleteOption}
           onSaveOption={this.saveOption}
-          sections={this.state.sections} />
+          sections={this.props.sections} />
       );
     }
   }
-
+}), [configStore], function() {
+  return {
+    sections: configStore.getSections(),
+    loading: configStore.isLoading()
+  };
 });
 
 var ConfigTable = React.createClass({
@@ -267,6 +245,18 @@ var ConfigOptionTrash = React.createClass({
 });
 
 var AddOptionController = React.createClass({
+  addOption: function (option) {
+    Actions.addOption(this.props.node, option);
+  },
+
+  render: function () {
+    return (
+      <AddOptionButton onAdd={this.addOption} />
+    );
+  }
+});
+
+var AddOptionButton = React.createClass({
   getInitialState: function () {
     return {
       sectionName: '',
@@ -276,7 +266,7 @@ var AddOptionController = React.createClass({
     };
   },
 
-  addOption: function () {
+  onAdd: function () {
     var option = {
       sectionName: this.state.sectionName,
       optionName: this.state.optionName,
@@ -284,7 +274,7 @@ var AddOptionController = React.createClass({
     };
 
     this.setState({ show: false });
-    Actions.addOption(configStore.getNode(), option);
+    this.props.onAdd(option);
   },
 
   getPopover: function () {
@@ -300,7 +290,7 @@ var AddOptionController = React.createClass({
           onChange={e => this.setState({ value: (e.target.value) })}
           type="text" name="value" placeholder="Value" />
         <a
-          onClick={this.addOption}
+          onClick={this.onAdd}
           className="btn">Create</a>
       </Popover>
     );
@@ -331,6 +321,6 @@ var AddOptionController = React.createClass({
 });
 
 export default {
-  ConfigController: ConfigController,
+  ConfigController: ConfigTableController,
   AddOptionController: AddOptionController
 };

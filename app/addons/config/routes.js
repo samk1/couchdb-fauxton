@@ -80,8 +80,8 @@ var ConfigPerNodeRouteObject = FauxtonAPI.RouteObject.extend({
 
   configForNode: function (node) {
     this.removeComponents();
-    this.setComponent('#right-header', ConfigComponents.AddOptionController);
-    this.setComponent('#dashboard-lower-content', ConfigComponents.ConfigController);
+    this.setComponent('#right-header', ConfigComponents.AddOptionController, { node });
+    this.setComponent('#dashboard-lower-content', ConfigComponents.ConfigController, { node });
     ConfigActions.fetchAndEditConfig(node, this.configs);
     this.sidebar.setSelectedTab('main');
   },
