@@ -21,7 +21,32 @@ import FauxtonComponents from "../fauxton/components.react";
 
 var configStore = Stores.configStore;
 
-var ConfigTableController = Components.connectToStores(React.createClass({
+var ConfigTableController = React.createClass({
+  getStoreState: function () {
+    return {
+      options: configStore.getOptions(),
+      loading: configStore.isLoading()
+    };
+  },
+
+  getInitialState: function () {
+    return this.getStoreState();
+  },
+
+  componentDidMount: function () {
+    configStore.on('change', this.onChange, this);
+  },
+
+  componentWillUnmount: function () {
+    configStore.off('change', this.onChange, this);
+  },
+
+  onChange: function () {
+    if (this.isMounted()) {
+      this.setState(this.getStoreState());
+    }
+  },
+
   saveOption: function (option) {
     Actions.saveOption(this.props.node, option);
   },
@@ -31,7 +56,7 @@ var ConfigTableController = Components.connectToStores(React.createClass({
   },
 
   render: function () {
-    if (this.props.loading) {
+    if (this.state.loading) {
       return (
         <div className="view">
           <Components.LoadLines />
@@ -42,15 +67,10 @@ var ConfigTableController = Components.connectToStores(React.createClass({
         <ConfigTable
           onDeleteOption={this.deleteOption}
           onSaveOption={this.saveOption}
-          options={this.props.options} />
+          options={this.state.options} />
       );
     }
   }
-}), [configStore], function() {
-  return {
-    options: configStore.getOptions(),
-    loading: configStore.isLoading()
-  };
 });
 
 var ConfigTable = React.createClass({
@@ -317,6 +337,6 @@ var AddOptionButton = React.createClass({
 });
 
 export default {
-  ConfigController: ConfigTableController,
+  ConfigTableController: ConfigTableController,
   AddOptionController: AddOptionController
 };
