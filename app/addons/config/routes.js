@@ -49,7 +49,7 @@ var ConfigPerNodeRouteObject = FauxtonAPI.RouteObject.extend({
   ],
 
   apiUrl: function () {
-    return [this.configs.url(), this.configs.documentation];
+    return ['', ''];
   },
 
   routes: {
@@ -59,8 +59,6 @@ var ConfigPerNodeRouteObject = FauxtonAPI.RouteObject.extend({
 
   initialize: function (_a, _b, options) {
     var node = options[0];
-
-    this.configs = new Config.ConfigModel({node: node});
 
     this.sidebar = this.setView('#sidebar-content', new Views.Tabs({
       sidebarItems: [
@@ -81,8 +79,8 @@ var ConfigPerNodeRouteObject = FauxtonAPI.RouteObject.extend({
   configForNode: function (node) {
     this.removeComponents();
     this.setComponent('#right-header', ConfigComponents.AddOptionController, { node });
-    this.setComponent('#dashboard-lower-content', ConfigComponents.ConfigController, { node });
-    ConfigActions.fetchAndEditConfig(node, this.configs);
+    this.setComponent('#dashboard-lower-content', ConfigComponents.ConfigTableController, { node });
+    ConfigActions.fetchAndEditConfig(node);
     this.sidebar.setSelectedTab('main');
   },
 

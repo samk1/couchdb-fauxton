@@ -19,13 +19,24 @@ export default {
   fetchAndEditConfig: function (node, model) {
     FauxtonAPI.dispatch({ type: ActionTypes.LOADING_CONFIG });
 
-    FauxtonAPI.when([model.fetch()]).then(function () {
-      this.editSections({ sections: model.get('sections'), node });
-    }.bind(this));
+    var configModel = new Resources.ConfigModel({ node });
+
+    FauxtonAPI.when(configModel.fetch())
+      .then(function () {
+        this.editSections({ sections: configModel.get('sections'), node });
+      }.bind(this));
   },
 
   editSections: function (options) {
     FauxtonAPI.dispatch({ type: ActionTypes.EDIT_CONFIG, options });
+  },
+
+  editOption: function (options) {
+    FauxtonAPI.dispatch({ type: ActionTypes.EDIT_OPTION, options });
+  },
+
+  cancelEdit: function (options) {
+    FauxtonAPI.dispatch({ type: ActionTypes.CANCEL_EDIT, options });
   },
 
   saveOption: function (node, options) {

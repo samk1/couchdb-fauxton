@@ -15,7 +15,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Stores from "./stores";
 import Actions from "./actions";
-import { Overlay, Button, Popover } from "react-bootstrap";
+import {Overlay, Button, Popover} from "react-bootstrap";
 import Components from "../components/react-components.react";
 import FauxtonComponents from "../fauxton/components.react";
 
@@ -55,6 +55,14 @@ var ConfigTableController = React.createClass({
     Actions.deleteOption(this.props.node, option);
   },
 
+  editOption: function (option) {
+    Actions.editOption(option);
+  },
+
+  cancelEdit: function (option) {
+    Actions.cancelEdit(option);
+  },
+
   render: function () {
     if (this.state.loading) {
       return (
@@ -67,55 +75,40 @@ var ConfigTableController = React.createClass({
         <ConfigTable
           onDeleteOption={this.deleteOption}
           onSaveOption={this.saveOption}
-          options={this.state.options} />
+          onEditOption={this.editOption}
+          onCancelEdit={this.cancelEdit}
+          options={this.state.options}/>
       );
     }
   }
 });
 
 var ConfigTable = React.createClass({
-  getInitialState: function () {
-    return {
-      editingSectionName: null,
-      editingOptionName: null
-    };
-  },
-
-  onSave: function (option) {
-    this.setState(this.getInitialState());
+  onSaveOption: function (option) {
     this.props.onSaveOption(option);
   },
 
-  onEdit: function (option) {
-    this.setState({
-      editingSectionName: option.sectionName,
-      editingOptionName: option.optionName
-    });
+  onEditOption: function (option) {
+    this.props.onEditOption(option);
+  },
+
+  onDeleteOption: function (option) {
+    this.props.onDeleteOption(option);
   },
 
   onCancelEdit: function () {
-    this.setState(this.getInitialState());
+    this.props.onCancelEdit();
   },
 
   createOptions: function () {
-    // previous section name
-    var p = null;
-
     return _.map(this.props.options, function (option) {
-      var key = `${option.sectionName}:${option.optionName}`;
-      var editing = this.state.editingSectionName == option.sectionName
-        && this.state.editingOptionName == option.optionName;
-
       return <ConfigOption
-        // true when new section name is first encountered
-        header={p != option.sectionName ? (p = option.sectionName, true) : false}
-        editing={editing}
         option={option}
-        onDelete={this.props.onDeleteOption}
-        onSave={this.onSave}
-        onEdit={() => this.onEdit(option)}
+        onDelete={this.onDeleteOption}
+        onSave={this.onSaveOption}
+        onEdit={this.onEditOption}
         onCancelEdit={this.onCancelEdit}
-        key={key}
+        key={`${option.sectionName}/${option.optionName}`}
       />;
     }.bind(this));
   },
@@ -126,12 +119,12 @@ var ConfigTable = React.createClass({
     return (
       <table className="config table table-striped table-bordered">
         <thead>
-          <tr>
-            <th id="config-section" width="22%">Section</th>
-            <th id="config-option" width="22%">Option</th>
-            <th id="config-value">Value</th>
-            <th id="config-trash"></th>
-          </tr>
+        <tr>
+          <th id="config-section" width="22%">Section</th>
+          <th id="config-option" width="22%">Option</th>
+          <th id="config-value">Value</th>
+          <th id="config-trash"></th>
+        </tr>
         </thead>
         <tbody>
         {options}
@@ -142,10 +135,6 @@ var ConfigTable = React.createClass({
 });
 
 var ConfigOption = React.createClass({
-  getInitialState: function () {
-    return { deleting: false };
-  },
-
   onSave: function (value) {
     var option = this.props.option;
     option.value = value;
@@ -153,26 +142,31 @@ var ConfigOption = React.createClass({
   },
 
   onDelete: function () {
-    this.setState({ deleting: true });
     this.props.onDelete(this.props.option);
   },
 
-  render: function () {
-    var trClass = this.state.deleting ? "config-item config-item-deleting" : "config-item";
+  onEdit: function () {
+    this.props.onEdit(this.props.option);
+  },
 
+  onCancelEdit: function () {
+    this.props.onCancelEdit(this.props.option);
+  },
+
+  render: function () {
     return (
-      <tr className={trClass}>
-        <th>{this.props.header && this.props.option.sectionName}</th>
-        <ConfigOptionName name={this.props.option.optionName} />
+      <tr className="config-item">
+        <th>{this.props.option.header && this.props.option.sectionName}</th>
+        <ConfigOptionName name={this.props.option.optionName}/>
         <ConfigOptionValue
           value={this.props.option.value}
-          editing={this.props.editing}
+          editing={this.props.option.editing}
           onSave={this.onSave}
-          onEdit={this.props.onEdit}
-          onCancelEdit={this.props.onCancelEdit}
+          onEdit={this.onEdit}
+          onCancelEdit={this.onCancelEdit}
         />
         <ConfigOptionTrash
-          onDelete={this.onDelete} />
+          onDelete={this.onDelete}/>
       </tr>
     );
   }
@@ -191,11 +185,11 @@ var ConfigOptionName = React.createClass({
 var ConfigOptionValue = React.createClass({
   getInitialState: function () {
     // the prop specifies the initial value, which the user can edit
-    return { value: this.props.value };
+    return {value: this.props.value};
   },
 
   onChange: function (event) {
-    this.setState({ value: event.target.value });
+    this.setState({value: event.target.value});
   },
 
   onSave: function () {
@@ -221,11 +215,11 @@ var ConfigOptionValue = React.createClass({
             <input
               onChange={this.onChange}
               defaultValue={this.props.value}
-              autoFocus type="text" className="config-value-input" />
+              autoFocus type="text" className="config-value-input"/>
             <button className="btn btn-success fonticon-ok-circled btn-small"
-                    onClick={this.onSave} />
+                    onClick={this.onSave}/>
             <button className="btn fonticon-cancel-circled btn-small"
-                    onClick={this.onCancelEdit} />
+                    onClick={this.onCancelEdit}/>
           </div>
         </td>
       );
@@ -248,13 +242,14 @@ var ConfigOptionTrash = React.createClass({
 
   render: function () {
     return (
-      <td className="text-center config-item-trash config-delete-value" onClick={() => this.setState({showModal: true})}>
+      <td className="text-center config-item-trash config-delete-value"
+          onClick={() => this.setState({showModal: true})}>
         <i className="icon icon-trash"></i>
         <FauxtonComponents.ConfirmationModal
           text="Are you sure you want to delete this configuration value?"
           onClose={() => this.setState({showModal: false})}
           onSubmit={this.props.onDelete}
-          visible={this.state.showModal} />
+          visible={this.state.showModal}/>
       </td>
     );
   }
@@ -267,7 +262,7 @@ var AddOptionController = React.createClass({
 
   render: function () {
     return (
-      <AddOptionButton onAdd={this.addOption} />
+      <AddOptionButton onAdd={this.addOption}/>
     );
   }
 });
@@ -289,7 +284,7 @@ var AddOptionButton = React.createClass({
       value: this.state.value
     };
 
-    this.setState({ show: false });
+    this.setState({show: false});
     this.props.onAdd(option);
   },
 
@@ -298,13 +293,13 @@ var AddOptionButton = React.createClass({
       <Popover className="tray" id="add-option-popover" title="Add Option">
         <input
           onChange={e => this.setState({ sectionName: (e.target.value) })}
-          type="text" name="section" placeholder="Section" autocomplete="off" autoFocus />
+          type="text" name="section" placeholder="Section" autocomplete="off" autoFocus/>
         <input
           onChange={e => this.setState({ optionName: (e.target.value) })}
-          type="text" name="name" placeholder="Name" />
+          type="text" name="name" placeholder="Name"/>
         <input
           onChange={e => this.setState({ value: (e.target.value) })}
-          type="text" name="value" placeholder="Value" />
+          type="text" name="value" placeholder="Value"/>
         <a
           onClick={this.onAdd}
           className="btn">Create</a>
@@ -338,5 +333,6 @@ var AddOptionButton = React.createClass({
 
 export default {
   ConfigTableController: ConfigTableController,
+  ConfigTable: ConfigTable,
   AddOptionController: AddOptionController
 };
