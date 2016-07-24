@@ -12,6 +12,7 @@
 import testUtils from "../../../../test/mocha/testUtils";
 import FauxtonAPI from "../../../core/api";
 import Actions from "../actions";
+import Resources from "../resources";
 import sinon from "sinon";
 
 const assert = testUtils.assert;
@@ -25,6 +26,18 @@ describe('Config Actions', function () {
     value: 'test'
   };
   var failXhr = { responseText: '{}' };
+
+  beforeEach(function () {
+    var optionStub = sinon.stub(Resources, 'OptionModel');
+    optionStub.returns({
+      save: () => null,
+      destroy: () => null
+    });
+  });
+
+  afterEach(function () {
+    restore(Resources.OptionModel);
+  });
 
   describe('add', function () {
     afterEach(function () {
