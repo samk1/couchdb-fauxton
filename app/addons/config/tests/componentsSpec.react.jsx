@@ -12,7 +12,6 @@
 import FauxtonAPI from "../../../core/api";
 import Views from "../components.react";
 import Actions from "../actions";
-import Resources from "../resources";
 import Stores from "../stores";
 import utils from "../../../../test/mocha/testUtils";
 import React from "react";
@@ -365,11 +364,13 @@ describe('Config Components', function () {
 
     beforeEach(function () {
       container = document.createElement('div');
+      _.each($('div[data-reactroot]'), function (el) {
+        ReactDOM.unmountComponentAtNode(el.parentNode);
+      });
     });
 
     afterEach(function () {
       ReactDOM.unmountComponentAtNode(container);
-      ReactDOM.unmountComponentAtNode($('div[data-reactroot]')[0].parentNode);
     });
 
     it('displays delete modal when clicked', function () {
@@ -473,11 +474,13 @@ describe('Config Components', function () {
 
     beforeEach(function () {
       container = document.createElement('div');
+      _.each($('div[data-reactroot]'), function (el) {
+        ReactDOM.unmountComponentAtNode(el.parentNode);
+      });
     });
 
     afterEach(function () {
       ReactDOM.unmountComponentAtNode(container);
-      ReactDOM.unmountComponentAtNode($('div[data-reactroot]')[0].parentNode);
     });
 
     it('displays add option controls when clicked', function () {
