@@ -16,7 +16,7 @@ import FauxtonAPI from '../../core/api';
 import Resources from './resources';
 
 export default {
-  fetchAndEditConfig: function (node, model) {
+  fetchAndEditConfig: function (node) {
     FauxtonAPI.dispatch({ type: ActionTypes.LOADING_CONFIG });
 
     var configModel = new Resources.ConfigModel({ node });
